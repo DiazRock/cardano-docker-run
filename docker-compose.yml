@@ -1,49 +1,38 @@
-version: "3"
+version: "3.7"
 services:
-  elasbit-producing: # block-producing node
-    image: inputoutput/cardano-node:latest
-    stdin_open: true # docker run -i
-    tty: true        # docker run -t
-    container_name: elasbit-producing
-    network_mode: host
-    volumes:
-      - ./test/:/config
-    environment:
-      - HOST_ADDR=0.0.0.0
-      - NODE_PORT=3000
-      - NODE_NAME=elasbit-block-producing
-      - NODE_TOPOLOGY=127.0.0.1:3001/1
-      - NODE_RELAY=False
-      - CARDANO_NETWORK=testnet
-      - EKG_PORT=12788
-      - PROMETHEUS_PORT=12798
-      - PROMETHEUS_HOST=127.0.0.1
-      - POOL_PLEDGE=100000000000
-      - POOL_COST=1000000000
-      - POOL_MARGIN=0.05
-      - CREATE_STAKEPOOL=True
-      - METADATA_URL=https://gist.githubusercontent.com/abracadaniel/58dfa2cfe0f986c7f445deb151ed1b49/raw/4bb8155af7be65d7e9869f0923c7ce778c75368b/metadata.json
-      - PUBLIC_RELAY_IP=PUBLIC
-    command: run
-    restart: unless-stopped
-  elasbit-relay1: # relay node
-    image: inputoutput/cardano-node:latest
-    stdin_open: true # docker run -i
-    tty: true        # docker run -t
+  elasbit-relay1: 
+    image: inputoutput/cardano-node:1.26.2
     container_name: elasbit-relay1
-    network_mode: host
+    ports: 
+      - 12798:12798
     volumes:
-      - ./test/:/config
-    environment:
-      - HOST_ADDR=0.0.0.0
-      - NODE_PORT=3001
-      - NODE_NAME=elasbit-relay1
-      - NODE_TOPOLOGY=127.0.0.1:3000/1
-      - NODE_RELAY=True
-      - CARDANO_NETWORK=testnet
-      - EKG_PORT=12788
-      - PROMETHEUS_PORT=12798
-      - PROMETHEUS_HOST=127.0.0.1
-      - AUTO_TOPOLOGY=False
-    command: run
+      - $PWD/testnet/:/configuration
+      - $PWD/relay1/:/relay1_logs
+    command: [
+              "run",
+              "--topology /configuration/testnet-topology.json",
+              "--database-path /relay1_logs/db",
+              "--socket-path /relay1_logs/db/node.socket",
+              "--host-addr 0.0.0.0",
+              "--port 3001",
+              "--config /configuration/testnet-config.json" 
+            ]
+    restart: unless-stopped
+  elasbit-relay2: 
+    image: inputoutput/cardano-node:1.26.2
+    container_name: elasbit-relay2
+    ports: 
+      - 12799:12798
+    volumes:
+      - $PWD/testnet/:/configuration
+      - $PWD/relay2:/relay2_logs
+    command: [
+              "run",
+              "--topology /configuration/testnet-topology.json",
+              "--database-path /relay2_logs/db",
+              "--socket-path /relay2_logs/db/node.socket",
+              "--host-addr 0.0.0.0",
+              "--port 3001",
+              "--config /configuration/testnet-config.json"
+            ]
     restart: unless-stopped
