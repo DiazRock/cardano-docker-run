@@ -8,11 +8,11 @@ services:
     volumes:
       - $PWD/testnet/:/configuration
       - $PWD/relay1/:/relay1_logs
-    mode: replicated
+    deploy:
       replicas: 1
       placement:
         constraints:
-          node.node_type == relay
+            node.node_type == relay
     command: [
               "run",
               "--topology /configuration/testnet-topology.json",
@@ -27,10 +27,11 @@ services:
     image: inputoutput/cardano-node:1.26.2
     container_name: elasbit-relay2
     mode: replicated
+    deploy:
       replicas: 1
       placement:
         constraints:
-          node.node_type == relay
+            node.node_type == relay
     ports: 
       - 12799:12798
     volumes:
