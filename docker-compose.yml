@@ -12,7 +12,7 @@ services:
       replicas: 1
       placement:
         constraints:
-            - node.labels.node_type == relay
+            - node.labels.node_type==relay
     command: [
               "run",
               "--topology /configuration/testnet-topology.json",
@@ -30,7 +30,7 @@ services:
       replicas: 1
       placement:
         constraints:
-            - node.labels.node_type == relay
+            - node.labels.node_type==relay
     ports: 
       - 12799:12798
     volumes:
