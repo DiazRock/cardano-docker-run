@@ -26,7 +26,6 @@ services:
   elasbit-relay2: 
     image: inputoutput/cardano-node:1.26.2
     container_name: elasbit-relay2
-    mode: replicated
     deploy:
       replicas: 1
       placement:
