@@ -1,0 +1,190 @@
+#
+# NAMESPACE=cela
+# kubectl create namespace $NAMESPACE
+#
+
+# GCE Storage Class
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: cela-standard-rwo
+provisioner: kubernetes.io/gce-pd
+parameters:
+  type: pd-standard
+  fstype: ext4
+  replication-type: none
+
+# relay1 ###############################################################################################################
+
+# relay1 Volume Claim
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: relay1-data
+  labels:
+    app: cela
+    pvc: relay1-data
+spec:
+  storageClassName: cela-standard-rwo
+  accessModes: [ ReadWriteOnce ]
+  resources:
+    requests:
+      storage: 10G
+
+# relay1 Pod
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: relay1
+  labels:
+    app: cela
+    pod: relay1
+spec:
+  containers:
+  - name: relay1
+    image: nessusio/cardano-node
+    imagePullPolicy: Always
+    env:
+    - name: CARDANO_PUBLIC_IP
+      valueFrom:
+        configMapKeyRef:
+          name: r1conf
+          key:  publicIP
+    - name: CARDANO_TOPOLOGY
+      valueFrom:
+        configMapKeyRef:
+          name: r1conf
+          key:  topology
+    - name: CARDANO_CUSTOM_PEERS
+      valueFrom:
+        configMapKeyRef:
+          name: r1conf
+          key:  customPeers
+    - name: CARDANO_UPDATE_TOPOLOGY
+      value: "true"
+    args: [ "run" ]
+    ports:
+      - containerPort: 3001
+    volumeMounts:
+    - name: datavol
+      mountPath: /opt/cela/data
+  nodeSelector:
+    nodeType: relay1
+  volumes:
+  - name: datavol
+    persistentVolumeClaim:
+      claimName: relay1-data
+
+# relay1 TCP Service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: relay1-np
+  labels:
+    app: cela
+spec:
+  type: NodePort
+  selector:
+    app: cela
+    pod: relay1
+  ports:
+  - name: tcp
+    port: 3001
+    nodePort: 30010
+
+# relay1 TCP Service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: relay1-clip
+  labels:
+    app: cela
+spec:
+  clusterIP: 172.30.0.190
+  selector:
+    app: cela
+    pod: relay1
+  ports:
+  - name: tcp
+    port: 3001
+
+# Block Producer ######################################################################################################
+
+# Block Producer Volume Claim
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bprod-data
+  labels:
+    app: cela
+    pvc: bprod-data
+spec:
+  storageClassName: cela-standard-rwo
+  accessModes: [ ReadWriteOnce ]
+  resources:
+    requests:
+      storage: 10G
+
+# Block Producer Pod
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: bprod
+  labels:
+    app: cela
+    pod: bprod
+spec:
+  containers:
+  - name: bprod
+    image: nessusio/cardano-node
+    imagePullPolicy: Always
+    env:
+    - name: CARDANO_TOPOLOGY
+      valueFrom:
+        configMapKeyRef:
+          name: bconf
+          key:  topology
+    - name: CARDANO_BLOCK_PRODUCER
+      value: "true"
+    args: [ "run" ]
+    ports:
+    - containerPort: 3001
+    volumeMounts:
+    - name: datavol
+      mountPath: /opt/cela/data
+    - name: keys
+      # This path is processed by /usr/local/bin/run-node
+      mountPath: /var/cela/secret/keys
+  nodeSelector:
+    nodeType: bprod
+  volumes:
+  - name: datavol
+    persistentVolumeClaim:
+      claimName: bprod-data
+  - name: keys
+    secret:
+      secretName: nodekeys
+
+# Block Producer TCP Service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bprod-clip
+  labels:
+    app: cela
+spec:
+  clusterIP: 172.30.0.188
+  selector:
+    app: cela
+    pod: bprod
+  ports:
+  - name: tcp
+    port: 3001
