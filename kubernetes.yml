@@ -62,10 +62,6 @@ metadata:
 
 apiVersion: apps/v1
 kind: StatefulSet
-metadata:
-  name: cardano-relay1-deployment
-  labels:
-    app: cardano-relay1-deployment
 spec:
   serviceName: cardano-relay1
   # Control the number of relays here
@@ -74,10 +70,6 @@ spec:
     matchLabels:
       node_role: relay1
   template:
-    metadata:
-      labels:
-        app: cardano-node-relay1
-        cardano-node-type: relay1
     spec:
       containers:
         - name: cardano-relay1
@@ -119,10 +111,6 @@ spec:
 
 apiVersion: apps/v1
 kind: StatefulSet
-metadata:
-  name: cardano-relay2-deployment
-  labels:
-    app: cardano-relay2-deployment
 spec:
   serviceName: cardano-node-relay2
   replicas: 1
@@ -130,10 +118,6 @@ spec:
     matchLabels:
       node_role: relay2
   template:
-    metadata:
-      labels:
-        app: cardano-node-relay2
-        cardano-node-type: relay2
     spec:
       containers:
         - name: cardano-node-relay2
