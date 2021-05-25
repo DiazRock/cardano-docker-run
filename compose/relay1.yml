@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: relay1
+  namespace: default
+spec:
+  serviceName: cardano-relay1
+  # Control the number of relays here
+  replicas: 1
+  selector: 
+    matchLabels:
+      node_role: relay1
+  template:
+    metadata:
+      labels:
+        node_role: relay1
+    spec:
+      containers:
+        - name: cardano-relay1
+          # Official IOHK/cardano-node image
+          image: inputoutput/cardano-node
+          # Expose both the cardano-node port and the /metrics endpoint port.
+          ports:
+            - containerPort: 12798
+            - containerPort: 3001
+          # Mount the data volume at /data
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: config
+              mountPath: /config
+          args: ["run",
+                "--config", "/config/testnet-config.json",
+                "--topology", "/config/testnet-topology.json",
+                "--database-path", "/data/db",
+                "--socket-path", "/data/node.socket",
+                "--port", "3001",
+                "--host-addr", "0.0.0.0"]
+      volumes:
+        - name: config
+          configMap:
+            name: testnet-config
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        # This storageClassName is used on the previously defined volume that
+        # provides storage on the host machine
+        storageClassName: local-storage-relay1
+        resources:
+          requests:
+            storage: 20Gi
