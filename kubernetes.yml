@@ -31,6 +31,7 @@ metadata:
 provisioner: kubernetes.io/no-provisioner
 volumeBindingMode: WaitForFirstConsumer
 
+
 apiVersion: v1
 kind: PersistentVolume
 metadata:
