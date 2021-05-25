@@ -71,13 +71,14 @@ spec:
   serviceName: cardano-relay1
   # Control the number of relays here
   replicas: 1
-  nodeSelector:
-    node_role: relay1
+  selector: 
+    matchLabels:
+      node_role: relay1
   template:
     metadata:
       labels:
-        app: cardano-testnet-node
-        cardano-testnet-node-type: relay1
+        app: cardano-node-relay1
+        cardano-node-type: relay1
     spec:
       containers:
         - name: cardano-relay1
@@ -119,22 +120,23 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: cardano-testnet-relay-deployment2
+  name: cardano-relay2-deployment
   labels:
-    app: cardano-testnet-relay-deployment2
+    app: cardano-relay2-deployment
 spec:
-  serviceName: cardano-testnet-relay2
+  serviceName: cardano-relay2
   replicas: 1
-  nodeSelector:
-    node_role: relay2
+  selector:
+    matchLabels:
+      node_role: relay1
   template:
     metadata:
       labels:
-        app: cardano-testnet-node2
-        cardano-testnet-node-type: relay
+        app: cardano-node-relay2
+        cardano-node-type: relay2
     spec:
       containers:
-        - name: cardano-testnet-relay2
+        - name: cardano-relay2
           image: inputoutput/cardano-node
           # Expose both the cardano-node port and the /metrics endpoint port.
           ports:
