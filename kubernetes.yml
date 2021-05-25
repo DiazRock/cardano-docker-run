@@ -16,8 +16,12 @@ spec:
     path: /home/ubuntu/cardano/relay2/data
   nodeAffinity:
     required:
-      nodeSelector:
-        node_role: relay1 
+      nodeSelectorTerms:
+        - matchExpressions:
+          - key: node_role
+            operator: In
+            values:
+              - relay1
 ---
 
 apiVersion: storage.k8s.io/v1
@@ -44,8 +48,12 @@ spec:
     path: /home/ubuntu/cardano/relay2/data
   nodeAffinity:
     required:
-      nodeSelector:
-        node_role: relay1 
+      nodeSelectorTerms:
+        - matchExpressions:
+          - key: node_role
+            operator: In
+            values:
+              - relay2
 ---
 
 apiVersion: storage.k8s.io/v1
