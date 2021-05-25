@@ -105,10 +105,10 @@ spec:
                 "--socket-path", "/data/node.socket",
                 "--port", "3001",
                 "--host-addr", "0.0.0.0"]
-    volumes:
-      - name: config
-        ConfigMap:
-          name: testnet-config
+      volumes:
+        - name: config
+          ConfigMap:
+            name: testnet-config
   volumeClaimTemplates:
     - metadata:
         name: data
@@ -159,10 +159,10 @@ spec:
                 "--socket-path", "/data/node.socket",
                 "--port", "3001",
                 "--host-addr", "0.0.0.0"]
-    volumes:
-      - name: config
-        ConfigMap:
-          name: testnet-config
+      volumes:
+        - name: config
+          ConfigMap:
+            name: testnet-config
   volumeClaimTemplates:
     - metadata:
         name: data
