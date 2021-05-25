@@ -28,8 +28,6 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: local-storage-relay1
-provisioner: kubernetes.io/no-provisioner
-volumeBindingMode: WaitForFirstConsumer
 
 
 apiVersion: v1
@@ -62,8 +60,6 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: local-storage-relay2
-provisioner: kubernetes.io/no-provisioner
-volumeBindingMode: WaitForFirstConsumer
 
 apiVersion: apps/v1
 kind: StatefulSet
