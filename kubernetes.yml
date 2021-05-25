@@ -14,8 +14,10 @@ spec:
   # Set the path to the folder on the node that will be mounted for this volume
   local:
     path: /home/ubuntu/cardano/relay2/data
-  nodeSelector:
-    node_role: relay1 
+  nodeAffinity:
+    required:
+      nodeSelector:
+        node_role: relay1 
 ---
 
 apiVersion: storage.k8s.io/v1
@@ -53,26 +55,24 @@ volumeBindingMode: WaitForFirstConsumer
 
 kind: StatefulSet
 metadata:
-  name: cardano-testnet-relay-deployment
+  name: cardano-relay1-deployment
   labels:
-    app: cardano-testnet-relay-deployment
+    app: cardano-relay1-deployment
 spec:
-  serviceName: cardano-testnet-relay
-  # Control the number of relays here (you'll need enough volumes to cover them!)
+  serviceName: cardano-relay1
+  # Control the number of relays here
   replicas: 1
   nodeSelector:
     node_role: relay1
   template:
     metadata:
       labels:
-        # I added two labels to make it easy to select either "all nodes" or
-        # "just relays" or just producer node"
         app: cardano-testnet-node
-        cardano-testnet-node-type: relay
+        cardano-testnet-node-type: relay1
     spec:
       containers:
-        - name: cardano-testnet-relay
-          # I'm using the official IOHK/cardano-node image to avoid needing to build anything
+        - name: cardano-relay1
+          # Official IOHK/cardano-node image
           image: inputoutput/cardano-node
           # Expose both the cardano-node port and the /metrics endpoint port.
           ports:
