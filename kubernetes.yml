@@ -116,6 +116,7 @@ spec:
         resources:
           requests:
             storage: 20Gi
+
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -123,11 +124,11 @@ metadata:
   labels:
     app: cardano-relay2-deployment
 spec:
-  serviceName: cardano-relay2
+  serviceName: cardano-node-relay2
   replicas: 1
   selector:
     matchLabels:
-      node_role: relay1
+      node_role: relay2
   template:
     metadata:
       labels:
@@ -135,7 +136,7 @@ spec:
         cardano-node-type: relay2
     spec:
       containers:
-        - name: cardano-relay2
+        - name: cardano-node-relay2
           image: inputoutput/cardano-node
           # Expose both the cardano-node port and the /metrics endpoint port.
           ports:
