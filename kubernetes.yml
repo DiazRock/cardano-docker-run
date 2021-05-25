@@ -42,8 +42,10 @@ spec:
   # Set the path to the folder on the node that will be mounted for this volume
   local:
     path: /home/ubuntu/cardano/relay2/data
-  nodeSelector:
-    node_role: relay2 
+  nodeAffinity:
+    required:
+      nodeSelector:
+        node_role: relay1 
 ---
 
 apiVersion: storage.k8s.io/v1
