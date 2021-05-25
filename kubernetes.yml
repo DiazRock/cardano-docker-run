@@ -13,7 +13,7 @@ spec:
   storageClassName: local-storage-relay1
   # Set the path to the folder on the node that will be mounted for this volume
   local:
-    path: /home/ubuntu/cardano/relay2/data
+    path: /home/ubuntu/cardano/relay1/data
   nodeAffinity:
     required:
       nodeSelectorTerms:
