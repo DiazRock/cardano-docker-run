@@ -29,7 +29,6 @@ kind: StorageClass
 metadata:
   name: local-storage-relay1
 
-
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -103,7 +102,7 @@ spec:
                 "--host-addr", "0.0.0.0"]
       volumes:
         - name: config
-          ConfigMap:
+          configMap:
             name: testnet-config
   volumeClaimTemplates:
     - metadata:
@@ -157,7 +156,7 @@ spec:
                 "--host-addr", "0.0.0.0"]
       volumes:
         - name: config
-          ConfigMap:
+          configMap:
             name: testnet-config
   volumeClaimTemplates:
     - metadata:
