@@ -70,6 +70,9 @@ spec:
     matchLabels:
       node_role: relay1
   template:
+    metadata:
+      labels:
+        node_role: relay1 
     spec:
       containers:
         - name: cardano-relay1
@@ -118,7 +121,10 @@ spec:
     matchLabels:
       node_role: relay2
   template:
-    spec:
+    metadata:
+      labels:
+        node_role: relay2    
+    spec: 
       containers:
         - name: cardano-node-relay2
           image: inputoutput/cardano-node
