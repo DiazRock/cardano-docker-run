@@ -1,5 +1,8 @@
 apiVersion: apps/v1
 kind: StatefulSet
+metadata:
+  name: relay1
+  namespace: default
 spec:
   serviceName: cardano-relay1
   # Control the number of relays here

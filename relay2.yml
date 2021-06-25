@@ -1,5 +1,8 @@
 apiVersion: apps/v1
 kind: StatefulSet
+metadata:
+  name: relay2
+  namespace: default
 spec:
   serviceName: cardano-node-relay2
   replicas: 1
