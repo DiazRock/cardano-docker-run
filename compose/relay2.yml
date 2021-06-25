@@ -3,6 +3,12 @@ kind: StatefulSet
 metadata:
   name: relay2
   namespace: default
+  annotations:
+    prometheus.io/port: "12798"
+    prometheus.io/scrape: "true"
+  labels:
+    name: cardano-node
+
 spec:
   serviceName: cardano-node-relay2
   replicas: 1
@@ -16,7 +22,13 @@ spec:
     spec:
       containers:
         - name: cardano-node-relay2
-          image: inputoutput/cardano-node
+          image: nessusio/cardano-node:dev
+          env:
+          - name: CARDANO_NETWORK
+            value: "testnet"
+          - name: CARDANO_UPDATE_TOPOLOGY
+            value: "true"
+
           # Expose both the cardano-node port and the /metrics endpoint port.
           ports:
             - containerPort: 12798
@@ -29,7 +41,7 @@ spec:
               mountPath: /config
           args: ["run",
                 "--config", "/config/testnet-config.json",
-                "--topology", "/config/testnet-topology.json",
+                "--topology", "/config/testnet-topology_relay2.json",
                 "--database-path", "/data/db",
                 "--socket-path", "/data/node.socket",
                 "--port", "3001",
@@ -37,7 +49,7 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: testnet-config
+            name: config
   volumeClaimTemplates:
     - metadata:
         name: data

@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: cardano-elasbit-producer-1
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce # Only allow one container to use this volume
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: local-storage-producer1
+  # Set the path to the folder on the node that will be mounted for this volume
+  local:
+    path: /home/ubuntu/cardano/producer1/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+          - key: node_role
+            operator: In
+            values:
+              - producer1 
+---
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: local-storage-relay1
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer

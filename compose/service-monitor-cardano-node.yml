@@ -1,0 +1,25 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: cardano-node-monitor
+  labels:
+    release: prometheus-monitoring
+    app.kubernetes.io/instance: prometheus-monitoring
+  namespace: monitoring 
+  annotations:
+    meta.helm.sh/release-name: prometheus-monitoring
+    meta.helm.sh/release-namespace: default
+
+spec:
+  endpoints:
+    - interval: 30s
+      port: service 
+      path: /metrics
+  namespaceSelector:
+    matchNames:
+      - default
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: prometheus-monitoring
+      app.kubernetes.io/name: cardano-state-metrics
+

@@ -1,27 +1,28 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: relay1
-  namespace: default  
+  name: producer1 
+  namespace: default
+  labels:
+    name: cardano-node
   annotations:
     prometheus.io/port: "12798"
     prometheus.io/scrape: "true"
-  labels:
-    name: cardano-node
+
 spec:
-  serviceName: cardano-relay1
+  serviceName: cardano-producer1-service
   # Control the number of relays here
   replicas: 1
   selector: 
     matchLabels:
-      node_role: relay1
+      node_role: producer1
   template:
     metadata:
       labels:
-        node_role: relay1
+        node_role: producer1
     spec:
       containers:
-        - name: cardano-relay1
+        - name: cardano-producer1
           # Arm version of nessusio 
           image: nessusio/cardano-node:dev
           env:
@@ -29,6 +30,7 @@ spec:
             value: "testnet"
           - name: CARDANO_UPDATE_TOPOLOGY
             value: "true"
+
           # Expose both the cardano-node port and the /metrics endpoint port.
           ports:
             - containerPort: 12798
@@ -39,17 +41,27 @@ spec:
               mountPath: /data
             - name: config
               mountPath: /config
+            - name: keys
+              mountPath: /keys
+              readOnly: true
           args: ["run",
                 "--config", "/config/testnet-config.json",
-                "--topology", "/config/testnet-topology_relay1.json",
+                "--topology", "/config/testnet-topology_producer1.json",
                 "--database-path", "/data/db",
                 "--socket-path", "/data/node.socket",
                 "--port", "3001",
-                "--host-addr", "0.0.0.0"]
+                "--host-addr", "0.0.0.0",
+                "--shelley-kes-key", "/keys/kes.skey",
+                "--shelley-vrf-key", "/keys/vrf.skey",
+                "--shelley-operational-certificate", "/keys/node.cert"]
       volumes:
         - name: config
           configMap:
             name: config
+        - name: keys
+          secret:
+            secretName: nodekeys 
+            defaultMode: 0400
   volumeClaimTemplates:
     - metadata:
         name: data
@@ -58,7 +70,7 @@ spec:
           - ReadWriteOnce
         # This storageClassName is used on the previously defined volume that
         # provides storage on the host machine
-        storageClassName: local-storage-relay1
+        storageClassName: local-storage-producer1
         resources:
           requests:
             storage: 20Gi

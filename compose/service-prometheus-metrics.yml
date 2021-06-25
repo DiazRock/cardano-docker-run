@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cardano-node-prometheus-service
+  labels:
+    app.kubernetes.io/name: cardano-state-metrics
+    release: prometheus-monitoring
+    app.kubernetes.io/instance: prometheus-monitoring
+    name: cardano-node-prometheus-service
+  annotations:
+    meta.helm.sh/release-name: prometheus-monitoring
+    meta.helm.sh/release-namespace: default
+spec:
+  selector:
+    name: cardano-node 
+  ports:
+    - name: service
+      port: 30101
+      targetPort: 12798
+
+

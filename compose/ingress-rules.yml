@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-rules
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: ingress-nginx 
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/issuer: "letsencrypt-prod"
+spec:
+  rules:
+  - host: monitoring.com
+    http:
+      paths:
+      - path: /grafana
+        backend:
+          serviceName: grafana-nodeport
+          servicePort: 20000

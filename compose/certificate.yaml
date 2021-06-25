@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: monitoring-secret-tls
+  namespace: monitoring
+spec:
+  secretName: monitoring-secret-tls
+  issuerRef:
+    kind: Issuer
+    name: letsencrypt-prod
+  commonName: "monitoring.com"
+  dnsNames:
+  - "monitoring.com"
